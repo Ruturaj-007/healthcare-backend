@@ -9,9 +9,11 @@ const server = app.listen(env.port, () => {
 // * GRACEFUL SHUTDOWN - important for docker deployements 
 // Helps to finish current requests before shutting down 
 process.on('SIGTERM', () => {
-    logger.info('SIGTERM received. shutting down gracefully...')
-    server.close(() => {
-        logger.info('Server closed.');
-        process.exit(0);
-    });
+  logger.info('SIGTERM received. shutting down gracefully...');
+  server.close(async () => {
+    const prisma = require('./src/config/prisma');
+    await prisma.$disconnect();
+    logger.info('Server closed.');
+    process.exit(0);
+  });
 });
