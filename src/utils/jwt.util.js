@@ -5,8 +5,8 @@ const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY = '7d';
 
 function generateAccessToken(payload) {
-    return jwt.sign(payload, env.jwt.refreshSecret, {
-        expiresIn: REFRESH_TOKEN_EXPIRY
+    return jwt.sign(payload, env.jwt.accessSecret, {
+        expiresIn: ACCESS_TOKEN_EXPIRY
     });
 }
 
