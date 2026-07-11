@@ -37,4 +37,33 @@ async function registerUser({ name, email, password }) {
   };
 }
 
-module.exports = { registerUser };
+async function loginUser({ email, password }) {
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user) {
+    throw new ApiError(401, 'Invalid email or password');
+  }
+
+  const isPasswordValid = await comparePassword(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(401, 'Invalid email or password');
+  }
+
+  const tokenPayload = { id: user.id, role: user.role };
+  const accessToken = generateAccessToken(tokenPayload);
+  const refreshToken = generateRefreshToken(tokenPayload);
+
+  return {
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+    accessToken,
+    refreshToken,
+  };
+}
+
+module.exports = { registerUser, loginUser };
